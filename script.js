@@ -21,7 +21,7 @@ function sendRequests() {
         url = 'http://www.omdbapi.com/?i=tt' + pad(id) + '&r=json';
 
         $.ajax(url, {
-            status: function (result, status, xhr) {
+            success: function (result, status, xhr) {
                 expectedCount++;
             },
             error: function (xhr, status, error) {
@@ -61,10 +61,10 @@ $(document).ajaxComplete(function (event, xhr, settings) {
 
     // We have sent 1000 requests
     if (expectedCount == MAX_COUNT_PERCENT) {
-        if (batchCount >= 990) {
+        if (batchCount >= 950) {
             expectedCount = 0;
             batchCount = 0;
-            sendRequests();
+            setInterval(sendRequests, 5000);
         }
     }
 
@@ -91,5 +91,6 @@ $(document).ajaxComplete(function (event, xhr, settings) {
     }
 });
 
-// BEGIN
-sendRequests();
+function start() {
+    sendRequests();
+}
