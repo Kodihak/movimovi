@@ -64,7 +64,7 @@ $(document).ajaxComplete(function (event, xhr, settings) {
         if (batchCount >= 950) {
             expectedCount = 0;
             batchCount = 0;
-            setInterval(sendRequests, 5000);
+            window.setTimeout(sendRequests, 5000);
         }
     }
 
@@ -80,14 +80,12 @@ $(document).ajaxComplete(function (event, xhr, settings) {
         var x = 'X'.repeat(percent);
         var dot = '.'.repeat(100 - percent);
         console.log(percent + '% [' + x + dot + ']   Seconds passed: ' + seconds + ' Cumulative time: ' + (cumulativeTime / 1000).toFixed(3) + ' Average seconds: ' + (cumulativeTime / percent / 1000).toFixed(3));
-        window.setInterval(sendRequests, 5000);
     } else if (count == MAX_COUNT) {
         endTime = Date.now();
         var time = endTime - startTime;
         console.log("Processed " + MAX_COUNT + " movies in " + (time / 1000).toFixed(2) + " seconds.");
         console.log("Found " + movies.length + " viable movies.");
         $('#response').html(JSON.stringify(movies));
-        console.log(sizeof(JSON.stringify(movies)));
     }
 });
 
