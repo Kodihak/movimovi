@@ -1,8 +1,10 @@
 var url, data;
 var id = 1;
-var MAX_COUNT = 1;
+var MAX_COUNT = 100000;
 var MAX_COUNT_PERCENT = MAX_COUNT / 100;
 var count = 0;
+var batchCount = 0;
+var expectedCount = 0;
 var movies = new Array();
 var startTime, endTime;
 var cumulativeTime = 0;
@@ -19,6 +21,12 @@ function sendRequests() {
         url = 'http://www.omdbapi.com/?i=tt' + pad(id) + '&r=json';
 
         $.ajax(url, {
+            status: function (result, status, xhr) {
+                expectedCount++;
+            },
+            error: function (xhr, status, error) {
+                expectedCount++;
+            },
             complete: function (xhr, status) {
                 if (status === "success") {
                     data = $.parseJSON(xhr.responseText);
@@ -37,6 +45,9 @@ function sendRequests() {
                         movies.push(data);
                     }
                 }
+            },
+            error: function (xhr, status) {
+
             }
         });
 
@@ -46,6 +57,14 @@ function sendRequests() {
 
 $(document).ajaxComplete(function (event, xhr, settings) {
     count++;
+
+    if (expectedCount == MAX_COUNT_PERCENT) {
+        if (count >= (0.95 * MAX_COUNT_PERCENT)) {
+            expectedCount = 0;
+            sendRequests();
+        }
+
+    }
 
     if (count == 1) {
         console.log("Beginning search...");
@@ -59,7 +78,7 @@ $(document).ajaxComplete(function (event, xhr, settings) {
         var x = 'X'.repeat(percent);
         var dot = '.'.repeat(100 - percent);
         console.log(percent + '% [' + x + dot + ']   Seconds passed: ' + seconds + ' Cumulative time: ' + (cumulativeTime / 1000).toFixed(3) + ' Average seconds: ' + (cumulativeTime / percent / 1000).toFixed(3));
-        sendRequests();
+        window.setInterval(sendRequests, 5000);
     } else if (count == MAX_COUNT) {
         endTime = Date.now();
         var time = endTime - startTime;
