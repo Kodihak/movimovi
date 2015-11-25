@@ -57,13 +57,15 @@ function sendRequests() {
 
 $(document).ajaxComplete(function (event, xhr, settings) {
     count++;
+    batchCount++;
 
+    // We have sent 1000 requests
     if (expectedCount == MAX_COUNT_PERCENT) {
-        if (count >= (0.95 * MAX_COUNT_PERCENT)) {
+        if (batchCount >= 990) {
             expectedCount = 0;
+            batchCount = 0;
             sendRequests();
         }
-
     }
 
     if (count == 1) {
